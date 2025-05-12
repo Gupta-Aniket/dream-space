@@ -1,12 +1,11 @@
 // src/components/DreamDropletInput.jsx
 import React, { useState, useRef } from 'react';
 import { TextInput, View, StyleSheet, Animated, Easing } from 'react-native';
-
+import {colors} from '../constants/Colors';
 export default function DreamDropletInput({ 
   value, 
   onChangeText, 
   placeholder,
-  colors = ['#9C27B0', '#673AB7', '#3F51B5'] 
 }) {
   const [splash] = useState(new Animated.Value(0));
   const [droplets, setDroplets] = useState([]);
@@ -75,9 +74,10 @@ export default function DreamDropletInput({
         />
       ))}
       <TextInput
+
         ref={inputRef}
         style={[styles.input, { 
-          borderColor: colors[1],
+          borderColor: colors.primary,
           backgroundColor: `${colors[2]}20` // Subtle background with alpha
         }]}
         value={value}
@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 12,
     borderRadius: 12,
+    color: colors.text
   },
   droplet: {
     borderRadius: 50,

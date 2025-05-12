@@ -6,9 +6,10 @@ const StarFarmContext = createContext();
 export const useStarFarm = () => useContext(StarFarmContext);
 
 export const StarFarmProvider = ({ children }) => {
-  const [stars, setStars] = useState(generateStars(100)); // 100 stars by default
-  const [ripple, setRipple] = useState(null); // { x, y, timestamp }
-  const [twinkles, setTwinkles] = useState([]);
+  const STAR_COUNT = 100;
+  const starsRef = useRef(generateStars(STAR_COUNT)); // constant positions
+  const [twinkles, setTwinkles] = useState([]); // array of star ids
+  const [ripple, setRipple] = useState(null); // { timestamp }
 
   function generateStars(count) {
     return Array.from({ length: count }, (_, i) => ({
@@ -19,18 +20,30 @@ export const StarFarmProvider = ({ children }) => {
     }));
   }
 
-  const triggerRipple = () => {
-    setRipple({ timestamp: Date.now() });
+  const triggerTwinkle = (count = 3) => {
+    const ids = [];
+    for (let i = 0; i < count; i++) {
+      ids.push(Math.floor(Math.random() * starsRef.current.length));
+    }
+    setTwinkles(ids);
+    setTimeout(() => setTwinkles([]), 300);
   };
 
-  const triggerTwinkle = () => {
-    const newTwinkles = Array.from({ length: 3 }, () => Math.floor(Math.random() * stars.length));
-    setTwinkles(newTwinkles);
-    setTimeout(() => setTwinkles([]), 300); // Reset after 300ms
+  const triggerRipple = () => {
+    setRipple({ timestamp: Date.now() });
+    triggerTwinkle(5); // Twinkle during ripple as well
+  };
+
+  const value = {
+    stars: starsRef.current,
+    twinkles,
+    ripple,
+    triggerRipple,
+    triggerTwinkle,
   };
 
   return (
-    <StarFarmContext.Provider value={{ stars, ripple, twinkles, triggerRipple, triggerTwinkle }}>
+    <StarFarmContext.Provider value={value}>
       {children}
     </StarFarmContext.Provider>
   );

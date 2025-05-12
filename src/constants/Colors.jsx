@@ -1,14 +1,8 @@
-// src/constants/Colors.js
-export const DreamPalette = {
-  primary: '#9C27B0',   // Deep Purple
-  secondary: '#673AB7', // Purple
-  accent: '#3F51B5',    // Indigo
-  background: '#F3E5F5', // Light Purple Background
-  text: '#FFFFFF',      // White
-  placeholder: '#999999' // Soft Gray
+export const colors = {
+  background: '#000000',
+  text: '#ffffff',
+  primary: '#6A1B9A',
+  secondary: '#512DA8',
+  muted: '#888888',
+  star: '#ffffff',
 };
-
-export const generateDreamColors = () => [
-  DreamPalette.primary,
-  DreamPalette.secondary,
-  DreamPalette.accent
