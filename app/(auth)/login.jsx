@@ -1,3 +1,4 @@
+// app/(auth)/login.jsx
 import React, { useState } from 'react';
 import {
   View,
@@ -11,36 +12,38 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-import { signUp } from '../../src/api/firebase';
+import { login } from '../../src/api/firebase';
 import { useRouter } from 'expo-router';
 import LinkedButton from '../../src/components/LinkedButton';
 import LinkedInput from '../../src/components/LinkedInput';
 import { colors } from '../../src/constants/Colors';
 
-export default function SignUp() {
-  const [name, setName] = useState('');
+export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleSignUp = async () => {
-    setError('');
-
-    if (!name.trim() || !email.trim() || !password.trim()) {
-      setError('All fields are required.');
+  const handleLogin = async () => {
+    if (!email.trim() || !password.trim()) {
+      setError('Email and password are required.');
       return;
     }
 
+    setError('');
     setLoading(true);
-    const { user, error: signUpError } = await signUp(name, email, password, name);
-    setLoading(false);
 
-    if (signUpError) {
-      setError(signUpError);
+    const { user, error } = await login(email, password);
+
+    if (error) {
+      setError(error);
+      setLoading(false);
     } else {
-      router.replace('/(tabs)/index');
+      // slight delay for smoother UX transition
+      setTimeout(() => {
+        router.replace('/(tabs)');
+      }, 300);
     }
   };
 
@@ -55,14 +58,7 @@ export default function SignUp() {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.container}>
-            <Text style={styles.title}>Sign Up</Text>
-
-            <LinkedInput
-              value={name}
-              onChangeText={setName}
-              placeholder="Name"
-              style={styles.input}
-            />
+            <Text style={styles.title}>Login</Text>
 
             <LinkedInput
               inputType="email"
@@ -80,20 +76,19 @@ export default function SignUp() {
               style={styles.input}
             />
 
-            <LinkedButton
-              onPress={handleSignUp}
-              title={loading ? '' : '   Sign Up   '}
-              primary
-              disabled={loading}
-            >
-              {loading && <ActivityIndicator color="white" />}
-            </LinkedButton>
+            {loading ? (
+              <View style={styles.loadingButton}>
+                <ActivityIndicator size="small" color="#a87fff" />
+              </View>
+            ) : (
+              <LinkedButton onPress={handleLogin} title="   Log In   " primary />
+            )}
 
             {error ? <Text style={styles.error}>{error}</Text> : null}
 
-            <TouchableOpacity onPress={() => router.replace('/login')}>
+            <TouchableOpacity onPress={() => router.replace('/signup')}>
               <Text style={styles.switchText}>
-                Already a user? <Text style={styles.link}>Log in</Text>
+                New to the app? <Text style={styles.link}>Sign up</Text>
               </Text>
             </TouchableOpacity>
           </View>
@@ -123,6 +118,13 @@ const styles = StyleSheet.create({
   input: {
     marginBottom: 20,
     color: colors.text,
+  },
+  loadingButton: {
+    marginVertical: 10,
+    paddingVertical: 14,
+    backgroundColor: '#333',
+    borderRadius: 10,
+    alignItems: 'center',
   },
   error: {
     color: 'red',

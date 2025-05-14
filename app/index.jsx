@@ -16,7 +16,7 @@ export default function Index() {
 
       if (user) {
         console.log('[Index] user logged in, going to tabs');
-        router.replace('/');           // landing in (tabs)/index.tsx
+        router.replace('/(tabs)');           // landing in (tabs)/index.tsx
       } else {
         console.log('[Index] no user, going to signup');
         router.replace('/signup');     // landing in (auth)/signup.jsx
@@ -26,13 +26,13 @@ export default function Index() {
     return unsubscribe;
   }, []);
 
-  if (loading) {
-    return (
-      <View style={styles.loader}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <View style={styles.loader}>
+  //       <ActivityIndicator size="large" />
+  //     </View>
+  //   );
+  // }
   return null;
 }
 

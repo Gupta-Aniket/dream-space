@@ -1,5 +1,6 @@
 // src/context/StarFarmContext.jsx
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { Animated } from 'react-native';
 
 const StarFarmContext = createContext();
 
@@ -10,6 +11,7 @@ export const StarFarmProvider = ({ children }) => {
   const starsRef = useRef(generateStars(STAR_COUNT)); // constant positions
   const [twinkles, setTwinkles] = useState([]); // array of star ids
   const [ripple, setRipple] = useState(null); // { timestamp }
+  const [transitionKey, setTransitionKey] = useState(null); // For transition animations
 
   function generateStars(count) {
     return Array.from({ length: count }, (_, i) => ({
@@ -29,17 +31,31 @@ export const StarFarmProvider = ({ children }) => {
     setTimeout(() => setTwinkles([]), 300);
   };
 
-  const triggerRipple = () => {
-    setRipple({ timestamp: Date.now() });
-    triggerTwinkle(5); // Twinkle during ripple as well
-  };
+
+  const rippleAnimation = useRef(new Animated.Value(0)).current;
+
+const triggerRipple = (x, y) => {
+  setRipple({ x, y });
+
+  rippleAnimation.setValue(0);
+  Animated.timing(rippleAnimation, {
+    toValue: 1,
+    duration: 1200, // longer for smooth wave
+    useNativeDriver: false,
+  }).start(() => {
+    setRipple(null); // Reset ripple after completion
+  });
+};
 
   const value = {
     stars: starsRef.current,
     twinkles,
     ripple,
+    transitionKey,
     triggerRipple,
     triggerTwinkle,
+    setTransitionKey,
+    rippleAnimation,
   };
 
   return (
